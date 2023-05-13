@@ -154,3 +154,30 @@ class RLWithBushMostellerWholeGameEnv(RLWithBushMostellerEnv):
         game[:((N + 1) * self.num_rounds_hidden)] = -1
 
         return game.reshape(1, -1)[0].astype(np.float32)
+
+def test_n_games(algo, n):
+    results = []
+    final_states = []
+
+    for i in range(n):
+        total_reward, state = test_one_game(algo)
+        results.append(total_reward)
+        final_states.append(state)   
+
+    return results, final_states 
+
+def test_one_game(algo):
+    total_reward = 0.0
+    env = RLWithBushMostellerWholeGameEnv({
+        'num_rounds_hidden': 0,
+        'reward_function': 'proportion'
+    })
+    state, _ = env.reset()
+
+    done = False
+    while not done:
+        action = algo.compute_single_action(state)
+        state, reward, done, _, _ = env.step(action)
+        total_reward += reward
+    
+    return total_reward, state
