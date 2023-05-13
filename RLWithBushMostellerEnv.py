@@ -155,22 +155,22 @@ class RLWithBushMostellerWholeGameEnv(RLWithBushMostellerEnv):
 
         return game.reshape(1, -1)[0].astype(np.float32)
 
-def test_n_games(algo, n):
-    results = []
+def run_n_rl_games(algo, reward_function, n):
+    rewards = []
     final_states = []
 
     for i in range(n):
-        total_reward, state = test_one_game(algo)
-        results.append(total_reward)
+        total_reward, state = run_one_rl_game(algo, reward_function)
+        rewards.append(total_reward)
         final_states.append(state)   
 
-    return results, final_states 
+    return rewards, final_states 
 
-def test_one_game(algo):
+def run_one_rl_game(algo, reward_function):
     total_reward = 0.0
     env = RLWithBushMostellerWholeGameEnv({
         'num_rounds_hidden': 0,
-        'reward_function': 'proportion'
+        'reward_function': reward_function
     })
     state, _ = env.reset()
 
