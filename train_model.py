@@ -6,6 +6,7 @@ NUM_TRAINING_ITERATIONS = 1000
 REWARD_FUNCTION = 'sum'
 
 # prop game: /home/shatayu/ray_results/PPO_RLWithBushMostellerWholeGameEnv_2023-05-12_23-16-30p84cj234/checkpoint_001000
+# sum model:  /home/shatayu/ray_results/PPO_RLWithBushMostellerWholeGameEnv_2023-05-13_11-04-37_jmf78e3/checkpoint_001000
 
 my_ppo = ( 
     PPOConfig()
