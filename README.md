@@ -1,5 +1,7 @@
 # Setup
 
+I used Python 3.9.1 for the below instructions, but any Python 3.x should suffice.
+
 Run the below commands:
 
 ```
