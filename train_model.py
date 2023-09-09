@@ -1,68 +1,57 @@
 # Create a PPO algorithm object using a config object ..
 from ray.rllib.algorithms.ppo import PPOConfig
 from RLWithBushMostellerEnv import RLWithBushMostellerWholeGameEnv
+import os
+import sys
+from datetime import datetime
 
 NUM_TRAINING_ITERATIONS = 1000
-REWARD_FUNCTION = 'sum'
 
 # prop game: /home/shatayu/ray_results/PPO_RLWithBushMostellerWholeGameEnv_2023-05-12_23-16-30p84cj234/checkpoint_001000
 # sum model:  /home/shatayu/ray_results/PPO_RLWithBushMostellerWholeGameEnv_2023-05-13_11-04-37_jmf78e3/checkpoint_001000
 
-my_ppo = ( 
-    PPOConfig()
-    .rollouts(num_rollout_workers=1)
-    .resources(num_gpus=0)
-    .environment(
-        env=RLWithBushMostellerWholeGameEnv,
-        env_config={
-            'num_rounds_hidden': 0,
-            'reward_function': REWARD_FUNCTION
-        },
-        auto_wrap_old_gym_envs=False
-    )
-    .build()
-)
 
+if __name__ == "__main__":
+    # Check if the command line argument is provided
+    if len(sys.argv) < 2 or sys.argv[1] not in ('prop', 'sum'):
+        print("Please provide the reward function ('prop' or 'sum')")
+    else:
+        # Extract the checkpoint location from the command line argument
+        reward_function = sys.argv[1]
 
-final_checkpoint = ""
-for i in range(NUM_TRAINING_ITERATIONS):
-    my_ppo.train()
-
-    if (i + 1) % 10 == 0:
-        path_to_checkpoint = my_ppo.save()
-        print("*********************************")
-        print(
-            "An Algorithm checkpoint has been created inside directory: "
-            f"'{path_to_checkpoint}'."
+        my_ppo = ( 
+            PPOConfig()
+            .rollouts(num_rollout_workers=1)
+            .resources(num_gpus=0)
+            .environment(
+                env=RLWithBushMostellerWholeGameEnv,
+                env_config={
+                    'num_rounds_hidden': 0,
+                    'reward_function': reward_function
+                },
+                auto_wrap_old_gym_envs=False
+            )
+            .build()
         )
-        print("---------------------------------")
-        final_checkpoint = path_to_checkpoint
 
-# Let's terminate the algo for demonstration purposes.
-my_ppo.stop()
-print(f'Final checkpoint (reward function: {REWARD_FUNCTION}): {final_checkpoint}')
 
-# Test the environment out
-# env = RLWithBushMostellerWholeGameEnv({
-#     'num_rounds_hidden': 0,
-#     'reward_function': 'proportion'
-# })
+        for i in range(NUM_TRAINING_ITERATIONS):
+            my_ppo.train()
 
-# obs = env.reset()
-# reward = 0
-# terminated = False
-# truncated = False
+            if (i + 1) % 10 == 0:
+                path_to_checkpoint = my_ppo.save()
+                print("*********************************")
+                print(
+                    "An Algorithm checkpoint has been created inside directory: "
+                    f"'{path_to_checkpoint}'."
+                )
+                print("---------------------------------")
 
-# action = my_ppo.compute_single_action(obs)
-# print(action)
+        # Let's terminate the algo for demonstration purposes.
+        final_checkpoint = my_ppo.save('./models/')
+        renamed_checkpoint = f'models/model_{reward_function}_{final_checkpoint.split("/")[-1]}_{datetime.now().strftime("%Y%m%d%H%M%S%f")}'
 
-# obs, reward, terminated, truncated, info = env.step(action)
+        os.rename(final_checkpoint, renamed_checkpoint)
 
-# # Use the Algorithm's `from_checkpoint` utility to get a new algo instance
-# # thathas the exact same state as the old one, from which the checkpoint was
-# # created in the first place:
-# from ray.rllib.algorithms.ppo import PPO
-
-# my_new_ppo = PPO.from_checkpoint(path_to_checkpoint)
-
-# print("Finished!")
+        my_ppo.stop()
+        print(f'Final checkpoint (reward function: {reward_function}): {renamed_checkpoint}')
