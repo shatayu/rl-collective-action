@@ -42,7 +42,7 @@ Results saved in: results/results_sum_20230909132015823385.pkl
 
 # Analyzing Results
 
-1. Please open [the Google Colab notebook](https://colab.research.google.com/drive/11mIDYlcyS_HlXv5UrVmvVIMZUxGKoDSc#scrollTo=qLOyYJU8xJdk)
+1. Please open [the Google Colab notebook](https://colab.research.google.com/drive/1vWFJB_ZUUDheg_GozA62d-emsYvjwAqN)
 
 2. In the `root` folder, upload your results. There should be two files with names similar to: `results_sum_20230909132015823385.pkl` and `results_prop_20230513121319691750.pkl`. These exact files are also in the `results` folder of the GitHub file. These are the results from my original run.
 
