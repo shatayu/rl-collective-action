@@ -10,14 +10,14 @@ NUM_TRAINING_ITERATIONS = 1000
 # prop game: /home/shatayu/ray_results/PPO_RLWithBushMostellerWholeGameEnv_2023-05-12_23-16-30p84cj234/checkpoint_001000
 # sum model:  /home/shatayu/ray_results/PPO_RLWithBushMostellerWholeGameEnv_2023-05-13_11-04-37_jmf78e3/checkpoint_001000
 
-
 if __name__ == "__main__":
     # Check if the command line argument is provided
-    if len(sys.argv) < 2 or sys.argv[1] not in ('prop', 'sum'):
-        print("Please provide the reward function ('prop' or 'sum')")
+    if len(sys.argv) < 2 or sys.argv[1] not in ('proportion', 'sum'):
+        print("Please provide the reward function ('proportion' or 'sum')")
     else:
         # Extract the checkpoint location from the command line argument
         reward_function = sys.argv[1]
+        prefix = sys.argv[2]
 
         my_ppo = ( 
             PPOConfig()
@@ -29,7 +29,7 @@ if __name__ == "__main__":
                     'num_rounds_hidden': 0,
                     'reward_function': reward_function
                 },
-                auto_wrap_old_gym_envs=False
+                auto_wrap_old_gym_envs=False,
             )
             .build()
         )
@@ -49,7 +49,7 @@ if __name__ == "__main__":
 
         # Let's terminate the algo for demonstration purposes.
         final_checkpoint = my_ppo.save('./models/')
-        renamed_checkpoint = f'models/model_{reward_function}_{final_checkpoint.split("/")[-1]}_{datetime.now().strftime("%Y%m%d%H%M%S%f")}'
+        renamed_checkpoint = f'models/{prefix}_{NUM_TRAINING_ITERATIONS}_model_{reward_function}_{final_checkpoint.split("/")[-1]}_{datetime.now().strftime("%Y%m%d%H%M%S%f")}'
 
         os.rename(final_checkpoint, renamed_checkpoint)
 
