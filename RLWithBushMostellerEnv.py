@@ -2,6 +2,7 @@
 
 iteNum = 10000
 N = 3 # number of agents EXCLUDING the RL agent
+tmax = 25 # number of rounds
 
 a = 1.6 # multiply factor for PGG
 
@@ -22,11 +23,10 @@ class RLWithBushMostellerEnv(gym.Env):
     def __init__(self, config):
         self.num_rounds_hidden = config['num_rounds_hidden']
         self.reward_function = config['reward_function']
-        self.tmax = config['tmax'] # number of rounds
 
         assert self.reward_function in ['sum', 'proportion'], 'Invalid reward function'
     
-        self.aveCont = [0.0] * self.tmax
+        self.aveCont = [0.0] * tmax
         self.net = self.completeNet()
         self.pt = [0.0] * N
         self.At = [0.0] * N
@@ -34,10 +34,10 @@ class RLWithBushMostellerEnv(gym.Env):
         self.at = [0.0] * (N + 1)
         self.payoff = [0.0] * N
         self.current_round = 0
-        self.all_at = [([0.0] * (N + 1)) for _ in range(self.tmax)]
+        self.all_at = [([0.0] * (N + 1)) for _ in range(tmax)]
 
         self.action_space = gym.spaces.Discrete(101)
-        self.observation_space = gym.spaces.Box(low=0, high=1, shape=(self.tmax, N + 1), dtype=np.float32)
+        self.observation_space = gym.spaces.Box(low=0, high=1, shape=(tmax, N + 1), dtype=np.float32)
 
         self.initialize(self.net, self.payoff, self.at, self.pt, self.st, self.At)
 
@@ -56,7 +56,7 @@ class RLWithBushMostellerEnv(gym.Env):
         self.all_at[self.current_round] = at.copy()
 
     def reset(self, *, seed=None, options=None):
-        self.aveCont = [0.0] * self.tmax
+        self.aveCont = [0.0] * tmax
         self.net = self.completeNet()
         self.pt = [0.0] * N
         self.At = [0.0] * N
@@ -64,7 +64,7 @@ class RLWithBushMostellerEnv(gym.Env):
         self.at = [0.0] * (N + 1)
         self.payoff = [0.0] * N
         self.current_round = 0
-        self.all_at = [([0.0] * (N + 1)) for _ in range(self.tmax)]
+        self.all_at = [([0.0] * (N + 1)) for _ in range(tmax)]
 
         self.initialize(self.net, self.payoff, self.at, self.pt, self.st, self.At)
 
@@ -118,20 +118,20 @@ class RLWithBushMostellerEnv(gym.Env):
         if self.current_round == 0:
             self.at[N] = action
             self.all_at[0][N] = action
-        elif self.current_round < self.tmax:
+        elif self.current_round < tmax:
             self.at[N] = action
             self.updatePGG(self.net, self.payoff, self.at, self.pt, self.st, self.At)
             self.aveCont[self.current_round] += np.mean(self.at)
 
         self.current_round += 1
         
-        return self.get_state(), self.get_reward(), self.current_round >= self.tmax, False, {}
+        return self.get_state(), self.get_reward(), self.current_round >= tmax, False, {}
     
     def get_state(self):
         pass
 
     def get_reward(self):
-        if self.current_round < self.tmax:
+        if self.current_round < tmax:
             return 0
         else:
             return (
@@ -143,7 +143,7 @@ class RLWithBushMostellerEnv(gym.Env):
 class RLWithBushMostellerWholeGameEnv(RLWithBushMostellerEnv):
     def __init__(self, *args):
         super().__init__(*args)
-        self.observation_space = gym.spaces.Box(low=-1, high=self.tmax + 1, shape=(self.tmax * (N + 1) + 1, ), dtype=np.float32)
+        self.observation_space = gym.spaces.Box(low=-1, high=tmax + 1, shape=(tmax * (N + 1) + 1, ), dtype=np.float32)
 
     def get_state(self):
         game = np.concatenate([
