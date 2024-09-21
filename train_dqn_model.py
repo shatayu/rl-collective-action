@@ -5,7 +5,7 @@ import os
 import sys
 from datetime import datetime
 
-NUM_TRAINING_ITERATIONS = 1000
+NUM_TRAINING_ITERATIONS = 10
 
 # prop game: /home/shatayu/ray_results/PPO_RLWithBushMostellerWholeGameEnv_2023-05-12_23-16-30p84cj234/checkpoint_001000
 # sum model:  /home/shatayu/ray_results/PPO_RLWithBushMostellerWholeGameEnv_2023-05-13_11-04-37_jmf78e3/checkpoint_001000

@@ -1,9 +1,10 @@
-from RLWithBushMostellerEnv import tmax, std, iteNum, X, beta, a, N, A
+from RLWithBushMostellerEnv import std, iteNum, X, beta, a, N, A
 import numpy as np
 import math
 
 class BushMostellerEnvNoRL():
-    def __init__(self):
+    def __init__(self, tmax):
+        self.tmax = tmax
         self.N = N + 1
         self.aveCont = [0.0] * tmax
         self.net = self.completeNet()
@@ -70,14 +71,14 @@ class BushMostellerEnvNoRL():
     def main(self):
         for ite in range(iteNum):
             self.initialize(self.net, self.payoff, self.at, self.pt, self.st, self.At)
-            for t in range(tmax):
+            for t in range(self.tmax):
                 self.updatePGG(self.net, self.payoff, self.at, self.pt, self.st, self.At)
                 self.aveCont[t] += np.mean(self.at)
 
     def run_one_game(self):
         all_at = []
         self.initialize(self.net, self.payoff, self.at, self.pt, self.st, self.At)
-        for t in range(tmax):
+        for t in range(self.tmax):
             self.updatePGG(self.net, self.payoff, self.at, self.pt, self.st, self.At)
             all_at.append(self.at.copy())
         return all_at

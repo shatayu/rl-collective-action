@@ -25,7 +25,7 @@ if __name__ == "__main__":
 
         rl_game_rewards, rl_game_states = run_n_rl_games(my_new_ppo, reward_function, NUM_TEST_GAMES)
         baseline_game_states = run_n_baseline_games(NUM_TEST_GAMES)
-        file_location = f'results/results_{reward_function}_{datetime.now().strftime("%Y%m%d%H%M%S%f")}.pkl'
+        file_location = f'results/results_dqn_{reward_function}_{datetime.now().strftime("%Y%m%d%H%M%S%f")}.pkl'
 
         if not os.path.exists('./results'):
             os.makedirs('./results')
