@@ -27,7 +27,8 @@ if __name__ == "__main__":
                 env=RLWithBushMostellerWholeGameEnv,
                 env_config={
                     'num_rounds_hidden': 0,
-                    'reward_function': reward_function
+                    'reward_function': reward_function,
+                    'tmax': -1
                 },
                 auto_wrap_old_gym_envs=False,
             )
